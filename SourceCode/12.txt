@@ -1,1 +1,0 @@
-<div class="row col-11 ml-2"> 
