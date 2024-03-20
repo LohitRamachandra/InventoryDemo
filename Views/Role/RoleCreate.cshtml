@@ -1,0 +1,15 @@
+﻿@model Microsoft.AspNetCore.Identity.IdentityRole
+@{
+    ViewData["Title"] = "RoleCreate";
+}
+
+<h1>Create Role</h1>
+
+<form asp-action="RoleCreate">
+    <div class="form-group">
+        <label for="roleName">Role Name:</label>
+        <input type="text" id="roleName" name="roleName" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+

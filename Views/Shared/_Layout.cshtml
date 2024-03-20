@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
-@{ 
-    string menuTextColor = "text-white";   
+@{
+    string menuTextColor = "text-white";
 
 }
 <body>
@@ -30,6 +30,20 @@
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
                                 <a class="nav-link @menuTextColor" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="dropdown nav-item pr-2">
+                                <a class="nav-link dropdown-toggle @menuTextColor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Admin
+                                </a>
+
+                                <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);">
+                                    <li class="nav-item">
+                                        <a class="nav-link @menuTextColor" asp-area="" asp-controller="Role" asp-action="RoleIndex">Roles</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @menuTextColor" asp-area="" asp-controller="Role" asp-action="Index">User Roles</a>
+                                    </li>
+                                </ul>
                             </li>
                             @if (SignInManager.IsSignedIn(User))
                             {
@@ -61,14 +75,14 @@
                                         <li class="nav-item">
                                             <a class="nav-link @menuTextColor" asp-area="" asp-controller="Supplier" asp-action="Index">Suppliers</a>
                                         </li>
-                                         <li class="nav-item">
+                                        <li class="nav-item">
                                             <a class="nav-link @menuTextColor" asp-area="" asp-controller="Currency" asp-action="Index">Currencies</a>
-                                        </li>                                       
+                                        </li>
                                     </ul>
                                 </li>
 
 
-                                  <li class="dropdown nav-item pr-2">
+                                <li class="dropdown nav-item pr-2">
                                     <a class="nav-link dropdown-toggle @menuTextColor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                         Transactions
                                     </a>
@@ -77,7 +91,7 @@
                                             <a class="nav-link @menuTextColor" asp-area="" asp-controller="PurchaseOrder" asp-action="Index">PurchaseOrder</a>
                                         </li>
                                     </ul>
-                            
+
                                 </li>
 
 
@@ -148,8 +162,6 @@
                 </div>
             </div>
             <!--Error Dialog End-->
-
-
             @RenderBody()
         </main>
     </div>

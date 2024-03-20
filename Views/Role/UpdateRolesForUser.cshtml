@@ -1,0 +1,23 @@
+﻿@model InventoryBeginners.ViewModel.AssignRolesViewModel
+@{
+    ViewData["Title"] = "UpdateRolesForUser";
+}
+
+
+
+@{
+    ViewData["Title"] = "Update Roles";
+}
+
+<h1>Update Roles for @Model.UserName</h1>
+
+<form asp-action="UpdateRoles" method="post">
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="form-group">
+        <label>Select Roles:</label>
+        <select asp-for="SelectedRoleNames" asp-items="Model.Roles" class="form-control" multiple></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Roles</button>
+</form>

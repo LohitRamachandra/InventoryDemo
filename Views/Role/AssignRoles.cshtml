@@ -1,0 +1,26 @@
+﻿@model InventoryBeginners.ViewModel.AssignRolesViewModel
+@{
+    ViewData["Title"] = "AssignRoles";
+}
+
+
+
+<form asp-action="AssignRoles" asp-controller="Account" method="post">
+    <div class="form-group">
+        <label asp-for="UserName">Username:</label>
+        <input asp-for="UserName" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Select Roles:</label>
+        @foreach (var role in Model.Roles)
+        {
+            <div class="form-check">
+                <input type="checkbox" name="roleNames" value="@role.Value" id="@role.Value" class="form-check-input" />
+                <label class="form-check-label" for="@role.Value">@role.Value</label>
+            </div>
+        }
+    </div>
+
+    <button type="submit" asp-action="AssignRoles" class="btn btn-primary">Assign Roles</button>
+</form>
