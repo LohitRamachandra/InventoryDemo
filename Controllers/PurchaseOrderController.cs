@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DinkToPdf;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 
 namespace InventoryBeginners.Controllers
 {
@@ -15,16 +17,21 @@ namespace InventoryBeginners.Controllers
 
         private readonly ICurrency _CurrencyRepo;
 
+        private readonly HtmlToPdfService _htmlToPdfService;
+        private readonly ICompositeViewEngine _viewEngine;
 
 
-        public PurchaseOrderController(IPurchaseOrder repo, IProduct productRepo, ISupplier supplierRepo, ICurrency currencyRepo)
+
+
+        public PurchaseOrderController(IPurchaseOrder repo, IProduct productRepo, ISupplier supplierRepo, ICurrency currencyRepo, HtmlToPdfService htmlToPdfService, ICompositeViewEngine viewEngine)
         {
             _Repo = repo;
             _ProductRepo = productRepo;
 
             _SupplierRepo = supplierRepo;
             _CurrencyRepo = currencyRepo;
-
+            _htmlToPdfService = htmlToPdfService;
+            _viewEngine = viewEngine;
 
         }
 
@@ -210,7 +217,72 @@ namespace InventoryBeginners.Controllers
             }
         }
 
-        private List<SelectListItem> GetProducts()
+
+        public IActionResult DownloadInvoice(int id)
+        {
+            var poHeader = _Repo.GetItem(id);
+            Supplier getSup = _SupplierRepo.GetItem(poHeader.SupplierId);
+
+            poHeader.SupplierId = getSup.Id;
+            poHeader.Supplier.Name = getSup.Name;
+
+            Currency poCurrency = _CurrencyRepo.GetItem(poHeader.PoCurrencyId);
+            poHeader.PoCurrencyId = poHeader.PoCurrencyId;
+            poHeader.POCurrency.Name = poCurrency.Name;
+
+
+            var totalQuantity = poHeader.PoDetails.Sum(detail => detail.Quantity);
+            var totalAmount = poHeader.PoDetails.Sum(detail => detail.Total);
+
+            poHeader.TotalQuantity = totalQuantity;
+            poHeader.TotalPrice = totalAmount;
+
+            var htmlContent = RenderViewToString("_Invoice", poHeader);
+
+            // Convert HTML to PDF
+            var pdfBytes = _htmlToPdfService.ConvertHtmlToPdf(htmlContent);
+
+            // Save PDF to a file on the server
+            var fileName = $"purchase_order_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+            //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "pdfs", fileName);
+            //System.IO.File.WriteAllBytes(filePath, pdfBytes);
+
+            //// Return the file path
+            //return Content(filePath);
+            return File(pdfBytes, "application/pdf", $"{fileName}");
+        }
+
+
+        private string RenderViewToString(string viewName, PoHeader model)
+        {
+            ViewData.Model = model;
+
+            using (var sw = new StringWriter())
+            {
+                var viewEngineResult = _viewEngine.FindView(ControllerContext, viewName, false);
+
+                if (!viewEngineResult.Success)
+                {
+                    throw new InvalidOperationException($"Couldn't find view '{viewName}'");
+                }
+
+                var view = viewEngineResult.View;
+                var viewContext = new ViewContext(
+                    ControllerContext,
+                    view,
+                    ViewData,
+                    TempData,
+                    sw,
+                    new Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelperOptions());
+
+                view.RenderAsync(viewContext);
+
+                return sw.GetStringBuilder().ToString();
+            }
+        }
+
+
+            private List<SelectListItem> GetProducts()
         {
             var lstProducts = new List<SelectListItem>();
 

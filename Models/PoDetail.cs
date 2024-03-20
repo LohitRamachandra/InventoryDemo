@@ -48,5 +48,7 @@
 
         [NotMapped]
         public decimal Total { get; set; }
+
+        
     }
 }

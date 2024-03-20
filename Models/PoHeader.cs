@@ -59,8 +59,12 @@
         [MaxLength(500)]
         public string Remarks { get; set; } = " ";
 
-        public virtual List<PoDetail> PoDetails { get; set; } =new List<PoDetail>();        
+        public virtual List<PoDetail> PoDetails { get; set; } =new List<PoDetail>();
 
+        [NotMapped]
+        public decimal TotalQuantity { get; set; }
 
+        [NotMapped]
+        public decimal TotalPrice { get; set; }
     }
 }

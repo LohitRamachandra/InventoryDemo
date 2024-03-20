@@ -29,6 +29,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using InventoryBeginners.Repositories;
+using DinkToPdf.Contracts;
+using DinkToPdf;
+using InventoryBeginners;
 
 
 
@@ -50,6 +53,11 @@ builder.Services.AddScoped<IProductGroup, ProductGroupRepo>();
 
 builder.Services.AddScoped<ICurrency, CurrencyRepo>();
 builder.Services.AddScoped<IPurchaseOrder, PurchaseOrderRepo>();
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+builder.Services.AddScoped<HtmlToPdfService>();
+
+
+
 
 
 
@@ -59,10 +67,13 @@ builder.Services.AddScoped<IPurchaseOrder, PurchaseOrderRepo>();
 
 builder.Services.AddDbContext<InventoryContext>(options => options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings:dbconn").Value));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<InventoryContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+//    .AddEntityFrameworkStores<InventoryContext>();
 
-
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                 .AddDefaultUI()
+                 .AddEntityFrameworkStores<InventoryContext>()
+                 .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
